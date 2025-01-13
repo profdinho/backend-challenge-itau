@@ -1,5 +1,6 @@
 package br.com.profdinho.challenge.validation;
 
+import br.com.profdinho.challenge.enumeration.RoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class JwtValidator {
@@ -22,24 +25,20 @@ public class JwtValidator {
                 return false;
             }
 
-            String name = claims.get("Name", String.class);
-            String role = claims.get("Role", String.class);
-            Integer seed = claims.get("Seed", Integer.class);
-
-            if (name == null || !name.matches("^[^\\d]+$")) {
+            if (claims.get("Name", String.class) == null || !claims.get("Name", String.class).matches("^[^\\d]+$")) {
                 return false;
             }
 
-            if (name.length() > 256) {
+            if (claims.get("Name", String.class).length() > 256) {
                 return false;
             }
 
-            List<String> validRoles = Arrays.asList("Admin", "Member", "External");
-            if (!validRoles.contains(role)) {
+            List<String> validRoles = Arrays.stream(Stream.of(RoleEnum.values()).map(RoleEnum::getDescription).toArray(String[]::new)).toList();
+            if (!validRoles.contains(claims.get("Role", String.class))) {
                 return false;
             }
 
-            if (seed == null || !isPrime(seed)) {
+            if (claims.get("Seed", Integer.class) == null || !isPrime(claims.get("Seed", Integer.class))) {
                 return false;
             }
             return true;
