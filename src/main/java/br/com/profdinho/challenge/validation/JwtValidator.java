@@ -47,18 +47,6 @@ public class JwtValidator {
         }
     }
 
-    public String createJWT(String role, Integer seed, String name) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-
-        return Jwts
-                .builder()
-                .claim("Role", role)
-                .claim("Seed", seed)
-                .claim("Name", name)
-                .signWith(Keys.hmacShaKeyFor(keyBytes), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     private boolean isPrime(int number) {
         if (number <= 1) {
             return false;
@@ -69,5 +57,17 @@ public class JwtValidator {
             }
         }
         return true;
+    }
+
+    public String createJWT(String role, Integer seed, String name) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+
+        return Jwts
+                .builder()
+                .claim("Role", role)
+                .claim("Seed", seed)
+                .claim("Name", name)
+                .signWith(Keys.hmacShaKeyFor(keyBytes), SignatureAlgorithm.HS256)
+                .compact();
     }
 }
